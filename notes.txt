@@ -1,3 +1,8 @@
 https://codelabs.developers.google.com/codelabs/production-ready-ai-roadshow/1-building-a-multi-agent-system/building-a-multi-agent-system#0
 
 projekat u google cloud shelu : https://console.cloud.google.com/welcome?project=praxis-backup-321622&cloudshell=true
+
+
+
+posto google cloud  shell trazi karticu za billing prebacila sam repo na google collab on je besplatan i netrazi karticu  i napravila sam API key u Google Ai Studio 
+   moj fijl u google collab u :https://colab.research.google.com/drive/1HIIyrpW8o8M0Bk2MilHUXb-Qj-hz2T1w#scrollTo=sjt5WhkyLttG
