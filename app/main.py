@@ -18,6 +18,15 @@ from pydantic import BaseModel
 
 from authenticated_httpx import create_authenticated_client
 
+import os
+
+# Eksplicitno postavljamo putanje jer Windows voli da ih zaboravi
+# Pošto se fajl nalazi u glavnom folderu, idemo jedan korak unazad (../)
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../google_credentials.json"
+os.environ["GOOGLE_CLOUD_PROJECT"] = "praxis-backup-321622"
+# DODAJ OVU LINIJU: Govorimo frontendu gde sluša naš orkestrator agent
+os.environ["AGENT_SERVER_URL"] = "http://localhost:8004"
+
 class Feedback(BaseModel):
     score: float
     text: str | None = None

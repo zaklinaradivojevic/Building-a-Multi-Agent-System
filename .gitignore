@@ -7,7 +7,7 @@ __pycache__/
 /tmp
 /out-tsc
 /bazel-out
-
+google_credentials.json
 .env
 # C extensions
 *.so
