@@ -140,7 +140,7 @@ async def query_adk_sever(
                 "content":{
                     "parts": [
                         {
-                            "text": f"Error {event_source.response.text}"
+                            "text": f"Error (Status {event_source.response.status_code})"
                         }
                     ]
                 }

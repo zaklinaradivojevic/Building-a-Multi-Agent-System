@@ -7,7 +7,7 @@ MODEL = "gemini-3-flash-preview"
 content_builder_agent = Agent(
     name="content_builder_agent",  # Popravljeno ime
     model=MODEL,
-    system_instruction=(  # Promenjeno na system_instruction
+    instructions=(  # Promenjeno na system_instruction
         "Ti si stručni edukator i kreator online kurseva. "
         "Tvoj zadatak je da uzmeš istraživačke podatke i beleške koje je pripremio Researcher agent, "
         "a koji su prošli proveru i odobrenje od strane Judge agenta, i od njih napraviš "

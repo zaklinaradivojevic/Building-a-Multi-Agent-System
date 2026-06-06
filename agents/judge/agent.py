@@ -23,7 +23,7 @@ class JudgeFeedback(BaseModel):
 judge_agent = Agent(
     name="judge_agent",  # Popravljeno ime (bez razmaka)
     model=MODEL,
-    system_instruction=(  # Promenjeno sa instructions na system_instruction
+    instructions=(  # Promenjeno sa instructions na system_instruction
         "Ti si strogi ali pravedni istoričar, filozof i kritički ocenjivač sadržaja. "
         "Tvoj zadatak je da pregledaš sirove istraživačke podatke i oceniš njihovu tačnost, "
         "relevantnost, dubinu i istorijski kontekst. "

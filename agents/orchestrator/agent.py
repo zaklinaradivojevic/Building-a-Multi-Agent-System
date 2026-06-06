@@ -1,12 +1,18 @@
+# Čitamo URL-ove mikroservisa iz okruženja (koje postavlja run_local.sh ili .env)
+RESEARCHER_URL = os.getenv("RESEARCHER_AGENT_CARD_URL", "http://localhost:8001/a2a/agent/.well-known/agent.json")
+JUDGE_URL = os.getenv("JUDGE_AGENT_CARD_URL", "http://localhost:8002/a2a/agent/.well-known/agent.json")
+CONTENT_BUILDER_URL = os.getenv("CONTENT_BUILDER_AGENT_CARD_URL", "http://localhost:8003/a2a/agent/.well-known/agent.json")
+
+# Pravimo autentifikovani HTTP klijent za sigurnu komunikaciju između agenata
+authenticated_client = create_authenticated_client()
 import os
 import json
 from typing import AsyncGenerator
-from google.adk import BaseAgent, LoopAgent, SequentialAgent
-from google.adk.agents import RemoteAgent  # U novom ADK-u se često zove samo RemoteAgent ili se uvozi iz a2a
-from google.adk.types import InvocationContext, CallbackContext
+from google.adk.agents import BaseAgent, LlmAgent, LoopAgent, SequentialAgent
+from google.adk.agents.remote_a2a_agent import RemoteA2aAgent  # Ispravan import za ADK 2.x
+from google.adk import Agent, InvocationContext, CallbackContext
 from google.adk.events import Event, EventActions
 from authenticated_httpx import create_authenticated_client
-
 # --- Callbacks ---
 def create_save_output_callback(key: str):
     """Creates a callback to save the agent's final response to session state."""
@@ -31,13 +37,6 @@ def create_save_output_callback(key: str):
 
 # --- Remote Agents ---
 
-# Čitamo URL-ove mikroservisa iz okruženja (koje postavlja run_local.sh ili .env)
-RESEARCHER_URL = os.getenv("RESEARCHER_AGENT_CARD_URL", "http://localhost:8001/a2a/agent/.well-known/agent.json")
-JUDGE_URL = os.getenv("JUDGE_AGENT_CARD_URL", "http://localhost:8002/a2a/agent/.well-known/agent.json")
-CONTENT_BUILDER_URL = os.getenv("CONTENT_BUILDER_AGENT_CARD_URL", "http://localhost:8003/a2a/agent/.well-known/agent.json")
-
-# Pravimo autentifikovani HTTP klijent za sigurnu komunikaciju između agenata
-authenticated_client = create_authenticated_client()
 
 # Povezujemo se sa udaljenim mikroservisima preko A2A protokola
 researcher_agent = RemoteA2aAgent(

@@ -8,7 +8,7 @@ researcher_agent = Agent(
     name="researcher_agent",  # Popravljeno ime
     model=MODEL,
     tools=[google_search],
-    system_instruction=(  # Promenjeno na system_instruction
+    instructions=(  # Promenjeno na system_instruction
         "Ti si pedantni i radoznali istraživač, stručnjak za pronalaženje tačnih, "
         "pouzdanih i dubokih informacija na internetu. "
         "Tvoj glavni fokus su istorijske teme, biografije, ključne bitke i filozofski pravci."
