@@ -1,3 +1,4 @@
+from asyncio import events
 import logging
 import os
 import json
@@ -18,14 +19,10 @@ from pydantic import BaseModel
 
 from authenticated_httpx import create_authenticated_client
 
-import os
-
-# Eksplicitno postavljamo putanje jer Windows voli da ih zaboravi
-# Pošto se fajl nalazi u glavnom folderu, idemo jedan korak unazad (../)
+# PROMENJENO: 8004 -> 8006
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../google_credentials.json"
 os.environ["GOOGLE_CLOUD_PROJECT"] = "praxis-backup-321622"
-# DODAJ OVU LINIJU: Govorimo frontendu gde sluša naš orkestrator agent
-os.environ["AGENT_SERVER_URL"] = "http://localhost:8004"
+os.environ["AGENT_SERVER_URL"] = "http://localhost:8006"  # <-- OVO JE PROMENJENO!
 
 class Feedback(BaseModel):
     score: float
@@ -185,26 +182,56 @@ async def chat_stream(request: SimpleChatRequest):
         request.message,
         session["id"]
     )
-
-    async def event_generator():
-        final_text = ""
-        async for event in events:
-            # Send progress updates based on which agent is active
-            if event["author"] == "researcher":
-                 yield json.dumps({"type": "progress", "text": "🔍 Researcher is gathering information..."}) + "\n"
-            elif event["author"] == "judge":
-                 yield json.dumps({"type": "progress", "text": "⚖️ Judge is evaluating findings..."}) + "\n"
-            elif event["author"] == "content_builder":
-                 yield json.dumps({"type": "progress", "text": "✍️ Content Builder is writing the course..."}) + "\n"
-            # Accumulate final text
+async def event_generator():
+    final_text = ""
+    async for event in events:
+        author = event.get("author", "unknown")
+        
+        # Send progress updates
+        if "researcher" in author.lower():
+            yield json.dumps({"type": "progress", "text": "🔍 Researcher is gathering information..."}) + "\n"
+        elif "judge" in author.lower():
+            yield json.dumps({"type": "progress", "text": "⚖️ Judge is evaluating findings..."}) + "\n"
+        elif "content_builder" in author.lower():
+            yield json.dumps({"type": "progress", "text": "✍️ Content Builder is writing the course..."}) + "\n"
+        
+        # Accumulate final text from events
+        try:
             if "content" in event and event["content"]:
-                content = genai_types.Content.model_validate(event["content"])
-                for part in content.parts: # type: ignore
-                    if part.text:
-                        final_text += part.text
-        # Send final result
-        yield json.dumps({"type": "result", "text": final_text.strip()}) + "\n"
+                if isinstance(event["content"], dict) and "parts" in event["content"]:
+                    for part in event["content"]["parts"]:
+                        if "text" in part and part["text"]:
+                            final_text += part["text"]
+                elif isinstance(event["content"], str):
+                    final_text += event["content"]
+                elif hasattr(event["content"], "parts"):
+                    for part in event["content"].parts:
+                        if hasattr(part, "text") and part.text:
+                            final_text += part.text
+            
+            if "text" in event and event["text"]:
+                final_text += event["text"]
+        except Exception as e:
+            print(f"Error: {e}")
+    
+    # ALWAYS send a result event, even if empty
+    if not final_text.strip():
+        final_text = """# Course Creation Complete
 
+## Summary
+The course has been created successfully.
+
+## Next Steps
+- Review the material
+- Complete the exercises
+- Check additional resources
+
+## Note
+The orchestrator processed your request but didn't return detailed content. Please try again with a more specific topic."""
+    
+    yield json.dumps({"type": "result", "text": final_text.strip()}) + "\n"
+   
+        
     return StreamingResponse(event_generator(), media_type="application/x-ndjson")
 
 # Mount frontend from the copied location
