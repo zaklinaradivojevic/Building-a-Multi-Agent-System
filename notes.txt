@@ -13,3 +13,58 @@ nastavil da radim u VS Codu  google colab mi nije bas odgovarao
 
 
 resursi :  stari ,dobri git : https://git-scm.com/docs
+############################################################################################################################################################################
+
+ Idemo korak po korak da ponovo pokrenemo sve agente.
+
+## Redosled pokretanja (u RAZLIČITIM terminalima):
+
+### Terminal 1 - Researcher (port 8001)
+```bash
+cd C:/Users/korisnik/Building-a-Multi-Agent-System/agents/researcher
+uv run python -m google.adk.cli api_server --host 0.0.0.0 --port 8001
+```
+
+### Terminal 2 - Judge (port 8002)
+```bash
+cd C:/Users/korisnik/Building-a-Multi-Agent-System/agents/judge
+uv run python -m google.adk.cli api_server --host 0.0.0.0 --port 8002
+```
+
+### Terminal 3 - Content Builder (port 8003)
+```bash
+cd C:/Users/korisnik/Building-a-Multi-Agent-System/agents/content_builder
+uv run python -m google.adk.cli api_server --host 0.0.0.0 --port 8003
+```
+
+### Terminal 4 - Orchestrator (port 8006)
+```bash
+cd C:/Users/korisnik/Building-a-Multi-Agent-System/agents/orchestrator
+set RESEARCHER_AGENT_CARD_URL=http://localhost:8001
+set JUDGE_AGENT_CARD_URL=http://localhost:8002
+set CONTENT_BUILDER_AGENT_CARD_URL=http://localhost:8003
+uv run python -m google.adk.cli api_server --host 0.0.0.0 --port 8006
+```
+
+### Terminal 5 - App Frontend (port 8000) - opciono
+```bash
+cd C:/Users/korisnik/Building-a-Multi-Agent-System/app
+uv run python main.py
+```
+
+## Proveri da li svi rade:
+
+U novom terminalu:
+```bash
+curl http://localhost:8001/health
+curl http://localhost:8002/health
+curl http://localhost:8003/health
+curl http://localhost:8006/health
+```
+
+Svi bi trebalo da vrate `{"status":"ok"}`
+
+
+
+
+
