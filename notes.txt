@@ -65,6 +65,10 @@ curl http://localhost:8006/health
 Svi bi trebalo da vrate `{"status":"ok"}`
 
 
-
+✅ Frontend → šalje zahtev
+✅ Orchestrator → prima zahtev
+✅ Agent → pokušava da pozove Gemini API
+❌ Gemini API → vraća 429 grešku (quota prekoračena)
+✅ Sistem → vraća mock odgovor umesto da pukne
 
 
